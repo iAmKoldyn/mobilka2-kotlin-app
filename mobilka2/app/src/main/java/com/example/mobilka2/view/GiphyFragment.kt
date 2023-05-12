@@ -33,14 +33,18 @@ class GiphyFragment : Fragment() {
         val repository = GiphyRepository(apiService, apiKey)
         val factory = GiphyViewModelFactory(repository)
 
-        viewModel = ViewModelProvider(this, factory).get(GiphyViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory)[GiphyViewModel::class.java]
 
         gifAdapter = GifAdapter()
         binding.gifRecyclerView.adapter = gifAdapter
 
+        binding.gifRecyclerView.contentDescription = getString(R.string.gif_recycler_view_description)
         binding.retryButton.setOnClickListener {
             gifAdapter.retry()
         }
+
+        val errorTextView = binding.errorTextView
+        val retryButton = binding.retryButton
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.gifs.collectLatest { pagingData ->
@@ -50,7 +54,14 @@ class GiphyFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             gifAdapter.loadStateFlow.collectLatest { loadStates ->
-                binding.retryButton.visibility = if (loadStates.refresh is LoadState.Error) View.VISIBLE else View.GONE
+                val refreshState = loadStates.refresh
+                if (refreshState is LoadState.Error) {
+                    errorTextView.visibility = View.VISIBLE
+                    retryButton.visibility = View.VISIBLE
+                } else {
+                    errorTextView.visibility = View.GONE
+                    retryButton.visibility = View.GONE
+                }
             }
         }
 
