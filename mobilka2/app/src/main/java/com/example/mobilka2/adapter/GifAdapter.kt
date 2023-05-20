@@ -11,6 +11,7 @@ import com.example.mobilka2.model.Gif
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.example.mobilka2.R
 
 class GifAdapter : PagingDataAdapter<Gif, GifAdapter.GifViewHolder>(GIF_COMPARATOR) {
 
@@ -24,7 +25,9 @@ class GifAdapter : PagingDataAdapter<Gif, GifAdapter.GifViewHolder>(GIF_COMPARAT
 
     class GifViewHolder(private val binding: GifItemLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(gif: Gif) {
-            val requestOptions = RequestOptions().transform(CenterCrop(), RoundedCorners(8))
+            val requestOptions = RequestOptions()
+                .transform(CenterCrop(), RoundedCorners(8))
+                .placeholder(R.drawable.placeholder_image) // the placeholder image
 
             Glide.with(itemView)
                 .asGif()
